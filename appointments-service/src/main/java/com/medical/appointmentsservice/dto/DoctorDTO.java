@@ -1,6 +1,8 @@
 package com.medical.appointmentsservice.dto;
 
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 @Data
@@ -13,7 +15,7 @@ public class DoctorDTO {
     private String email;
     private String specialization;
     private String phone;
-    private Double rating;
+    private BigDecimal rating;
     private LocalTime availableFrom;
     private LocalTime availableTo;
 }

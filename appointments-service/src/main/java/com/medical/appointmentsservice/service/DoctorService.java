@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ public class DoctorService {
         doctor.setPhone(doctorDTO.getPhone());
         doctor.setAvailableFrom(doctorDTO.getAvailableFrom());
         doctor.setAvailableTo(doctorDTO.getAvailableTo());
-        doctor.setRating(4.5);
+        doctor.setRating(BigDecimal.valueOf(4.5));
 
         Doctor savedDoctor = doctorRepository.save(doctor);
         log.info("Médecin créé : {}", savedDoctor.getId());

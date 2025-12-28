@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -39,8 +40,8 @@ public class Doctor {
     @Column(nullable = false)
     private String phone;
 
-    @Column(columnDefinition = "DOUBLE DEFAULT 4.5")
-    private Double rating;
+    @Column(precision = 2, scale = 1)
+    private BigDecimal rating ;
 
     @Column(name = "available_from")
     private LocalTime availableFrom;
