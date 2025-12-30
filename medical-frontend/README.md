@@ -427,22 +427,7 @@ ng test
 ng serve --proxy-config proxy.conf.json
 ```
 
-### Helpers TypeScript
 
-```typescript
-// Date formatting
-formatDate(date: Date): string
-formatTime(date: Date): string
-formatDateTime(date: Date): string
-
-// Status helpers
-getStatusColor(status: AppointmentStatus): string
-getStatusIcon(status: AppointmentStatus): string
-
-// Doctor helpers
-getSpecialtyColor(specialty: Specialty): string
-getFullName(doctor: Doctor): string
-```
 
 ## 🌟 Points forts du package
 
