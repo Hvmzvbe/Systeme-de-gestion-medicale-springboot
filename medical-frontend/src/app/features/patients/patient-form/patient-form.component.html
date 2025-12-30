@@ -1,0 +1,282 @@
+<div class="patient-form-container">
+  <!-- Breadcrumbs -->
+  <div class="breadcrumbs">
+    <a routerLink="/" class="breadcrumb-link">
+      <span class="material-symbols-outlined">home</span>
+      Home
+    </a>
+    <span class="breadcrumb-separator">/</span>
+    <a routerLink="/patients" class="breadcrumb-link">Patients</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">{{ isEditMode ? 'Edit Patient' : 'New Patient' }}</span>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">
+      <span class="material-symbols-outlined">{{ isEditMode ? 'edit' : 'person_add' }}</span>
+      {{ isEditMode ? 'Edit Patient' : 'New Patient Registration' }}
+    </h1>
+    <p class="page-subtitle">
+      {{ isEditMode ? 'Update patient information below.' : 'Complete the form below to create a new patient record. Fields marked with an asterisk (*) are required.' }}
+    </p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading patient data...</p>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+
+    <!-- SECTION 1: Identity Information -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="material-symbols-outlined">badge</span>
+        <h2>Identity Information</h2>
+      </div>
+
+      <div class="section-content">
+        <!-- Name Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              First Name <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              formControlName="prenom"
+              class="form-input"
+              placeholder="e.g. John"
+              [class.error]="prenom?.invalid && prenom?.touched"
+            />
+            <div class="error-message" *ngIf="prenom?.invalid && prenom?.touched">
+              <span *ngIf="prenom?.errors?.['required']">First name is required</span>
+              <span *ngIf="prenom?.errors?.['minlength']">Must be at least 2 characters</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              Last Name <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              formControlName="nom"
+              class="form-input"
+              placeholder="e.g. Doe"
+              [class.error]="nom?.invalid && nom?.touched"
+            />
+            <div class="error-message" *ngIf="nom?.invalid && nom?.touched">
+              <span *ngIf="nom?.errors?.['required']">Last name is required</span>
+              <span *ngIf="nom?.errors?.['minlength']">Must be at least 2 characters</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SSN & DOB Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              Social Security Number <span class="required">*</span>
+            </label>
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined input-icon">fingerprint</span>
+              <input
+                type="text"
+                formControlName="numeroSecu"
+                class="form-input with-icon"
+                placeholder="123456789012345"
+                maxlength="15"
+                [class.error]="numeroSecu?.invalid && numeroSecu?.touched"
+              />
+            </div>
+            <div class="error-message" *ngIf="numeroSecu?.invalid && numeroSecu?.touched">
+              <span *ngIf="numeroSecu?.errors?.['required']">SSN is required</span>
+              <span *ngIf="numeroSecu?.errors?.['pattern']">Must be 15 digits</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              Date of Birth <span class="required">*</span>
+            </label>
+            <input
+              type="date"
+              formControlName="dateNaissance"
+              class="form-input"
+              [class.error]="dateNaissance?.invalid && dateNaissance?.touched"
+            />
+            <div class="error-message" *ngIf="dateNaissance?.invalid && dateNaissance?.touched">
+              <span *ngIf="dateNaissance?.errors?.['required']">Date of birth is required</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gender Row -->
+        <div class="form-group">
+          <label>
+            Gender <span class="required">*</span>
+          </label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" formControlName="sexe" value="M" />
+              <span>Male</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" formControlName="sexe" value="F" />
+              <span>Female</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Contact Information -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="material-symbols-outlined">contacts</span>
+        <h2>Contact Information</h2>
+      </div>
+
+      <div class="section-content">
+        <!-- Address -->
+        <div class="form-group full-width">
+          <label>Street Address</label>
+          <input
+            type="text"
+            formControlName="adresse"
+            class="form-input"
+            placeholder="123 Medical Plaza Drive"
+          />
+        </div>
+
+        <!-- City/Zip Row -->
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Postal Code</label>
+            <input
+              type="text"
+              formControlName="codePostal"
+              class="form-input"
+              placeholder="10001"
+              maxlength="5"
+              [class.error]="codePostal?.invalid && codePostal?.touched"
+            />
+            <div class="error-message" *ngIf="codePostal?.invalid && codePostal?.touched">
+              <span *ngIf="codePostal?.errors?.['pattern']">Must be 5 digits</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>City</label>
+            <input
+              type="text"
+              formControlName="ville"
+              class="form-input"
+              placeholder="New York"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>State / Region</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="NY"
+            />
+          </div>
+        </div>
+
+        <!-- Contact Details -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number</label>
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined input-icon">call</span>
+              <input
+                type="tel"
+                formControlName="telephone"
+                class="form-input with-icon"
+                placeholder="(555) 000-0000"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined input-icon">mail</span>
+              <input
+                type="email"
+                formControlName="email"
+                class="form-input with-icon"
+                placeholder="patient@example.com"
+                [class.error]="email?.invalid && email?.touched"
+              />
+            </div>
+            <div class="error-message" *ngIf="email?.invalid && email?.touched">
+              <span *ngIf="email?.errors?.['email']">Invalid email format</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Medical History -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="material-symbols-outlined">medical_services</span>
+        <h2>Medical History</h2>
+      </div>
+
+      <div class="section-content">
+        <!-- Allergies Tags -->
+        <div class="form-group full-width">
+          <label>Known Allergies</label>
+          <div class="tags-input">
+            <div class="tag" *ngFor="let tag of allergiesTags; let i = index">
+              {{ tag }}
+              <button type="button" class="tag-remove" (click)="removeAllergyTag(i)">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <input
+              type="text"
+              [(ngModel)]="allergyInput"
+              [ngModelOptions]="{standalone: true}"
+              (keydown)="addAllergyTag($event)"
+              class="tags-input-field"
+              placeholder="Type and press Enter..."
+            />
+          </div>
+          <p class="help-text">Press Enter to add a new allergy tag.</p>
+        </div>
+
+        <!-- Chronic Conditions -->
+        <div class="form-group full-width">
+          <label>Chronic Conditions / Notes</label>
+          <textarea
+            formControlName="maladiesChroniques"
+            class="form-textarea"
+            rows="5"
+            placeholder="List any chronic conditions, past surgeries, or relevant medical history details here..."
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Footer Actions -->
+    <div class="form-footer">
+      <button type="button" class="btn-cancel" (click)="cancel()" [disabled]="submitting">
+        Cancel
+      </button>
+      <button type="submit" class="btn-submit" [disabled]="submitting || patientForm.invalid">
+        <span class="material-symbols-outlined">{{ isEditMode ? 'save' : 'person_add' }}</span>
+        {{ submitting ? 'Saving...' : (isEditMode ? 'Update Patient' : 'Save Patient') }}
+      </button>
+    </div>
+  </form>
+</div>
