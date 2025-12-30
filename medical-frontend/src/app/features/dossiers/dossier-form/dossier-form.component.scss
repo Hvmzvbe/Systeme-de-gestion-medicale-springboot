@@ -1,0 +1,69 @@
+.dossier-form-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.consultation-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.consultation-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+
+  &:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
+  }
+
+  &.selected {
+    border-color: var(--primary);
+    background: rgba(0, 102, 204, 0.05);
+
+    .material-symbols-outlined {
+      color: var(--primary);
+    }
+
+    .type-label {
+      color: var(--primary);
+      font-weight: 600;
+    }
+  }
+
+  .material-symbols-outlined {
+    font-size: 2rem;
+    color: var(--text-sub);
+    transition: color 0.2s ease;
+  }
+
+  .type-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+    text-align: center;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}

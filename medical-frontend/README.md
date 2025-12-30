@@ -1,59 +1,189 @@
-# MedicalFrontend
+# Medical Frontend - Angular Application
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+## 📋 Vue d'ensemble
 
-## Development server
+Application Angular pour le système de gestion médicale, connectée aux microservices Spring Boot.
 
-To start a local development server, run:
+## 🏗️ Structure du Projet
 
-```bash
-ng serve
+```
+medical-frontend/
+├── src/
+│   ├── app/
+│   │   ├── core/
+│   │   │   ├── guards/
+│   │   │   │   └── auth.guard.ts
+│   │   │   ├── interceptors/
+│   │   │   │   ├── auth.interceptor.ts
+│   │   │   │   ├── error.interceptor.ts
+│   │   │   │   └── loading.interceptor.ts
+│   │   │   ├── models/
+│   │   │   │   ├── api-response.model.ts
+│   │   │   │   ├── patient.model.ts
+│   │   │   │   ├── dossier.model.ts
+│   │   │   │   ├── appointment.model.ts
+│   │   │   │   └── doctor.model.ts
+│   │   │   ├── services/
+│   │   │   │   ├── patient.service.ts
+│   │   │   │   ├── dossier.service.ts
+│   │   │   │   ├── appointment.service.ts
+│   │   │   │   ├── doctor.service.ts
+│   │   │   │   └── auth.service.ts
+│   │   │   └── core.module.ts
+│   │   │
+│   │   ├── features/
+│   │   │   ├── patients/
+│   │   │   │   ├── patient-detail/
+│   │   │   │   │   ├── patient-detail.component.ts
+│   │   │   │   │   ├── patient-detail.component.html
+│   │   │   │   │   └── patient-detail.component.scss
+│   │   │   │   ├── patient-form/
+│   │   │   │   │   ├── patient-form.component.ts
+│   │   │   │   │   ├── patient-form.component.html
+│   │   │   │   │   ├── patient-form.component.scss
+│   │   │   │   │   ├── dossier-form.component.ts
+│   │   │   │   │   └── dossier-form.component.html
+│   │   │   │   ├── patient-list/
+│   │   │   │   │   ├── patient-list.component.ts
+│   │   │   │   │   ├── patient-list.component.html
+│   │   │   │   │   └── patient-list.component.scss
+│   │   │   │   ├── patients.module.ts
+│   │   │   │   └── patients-routing.module.ts
+│   │   │   │
+│   │   │   ├── appointments/
+│   │   │   ├── dashboard/
+│   │   │   ├── doctors/
+│   │   │   └── dossiers/
+│   │   │
+│   │   ├── shared/
+│   │   │   ├── components/
+│   │   │   │   ├── header/
+│   │   │   │   │   ├── header.component.ts
+│   │   │   │   │   ├── header.component.html
+│   │   │   │   │   └── header.component.scss
+│   │   │   │   ├── sidebar/
+│   │   │   │   │   ├── sidebar.component.ts
+│   │   │   │   │   ├── sidebar.component.html
+│   │   │   │   │   └── sidebar.component.scss
+│   │   │   │   └── loading/
+│   │   │   │       ├── loading.component.ts
+│   │   │   │       ├── loading.component.html
+│   │   │       └── loading.component.scss
+│   │   │   ├── pipes/
+│   │   │   └── shared.module.ts
+│   │   │
+│   │   ├── app.component.ts
+│   │   ├── app.component.html
+│   │   ├── app.module.ts
+│   │   └── app-routing.module.ts
+│   │
+│   ├── assets/
+│   ├── environments/
+│   │   ├── environment.ts
+│   │   └── environment.prod.ts
+│   ├── styles/
+│   │   └── tailwind.css
+│   ├── index.html
+│   └── main.ts
+│
+├── angular.json
+├── package.json
+├── tailwind.config.js
+└── tsconfig.json
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 📦 Installation
 
-## Code scaffolding
+### Prérequis
+- Node.js (v18 ou supérieur)
+- npm (v9 ou supérieur)
+- Angular CLI (v18)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Étapes d'installation
 
 ```bash
-ng generate --help
+# 1. Créer le projet Angular
+ng new medical-frontend --routing --style=scss
+
+# 2. Installer les dépendances
+cd medical-frontend
+npm install
+
+# 3. Installer Tailwind CSS
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init
+
+# 4. Installer Material Icons (via CDN dans index.html)
+# Déjà configuré dans le template HTML
 ```
 
-## Building
+## ⚙️ Configuration
 
-To build the project run:
+### 1. Environnement (src/environments/environment.ts)
 
-```bash
-ng build
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080', // API Gateway URL
+  endpoints: {
+    patients: '/api/patients',
+    dossiers: '/api/dossiers',
+    appointments: '/api/appointments',
+    doctors: '/api/doctors',
+    auth: '/api/auth'
+  }
+};
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 2. Tailwind Configuration (tailwind.config.js)
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```javascript
+module.exports = {
+  content: [
+    "./src/**/*.{html,ts}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#0066cc',
+        'primary-dark': '#0052a3',
+        'background-light': '#f5f7f8',
+        'background-dark': '#0f1923',
+        'surface-light': '#ffffff',
+        'surface-dark': '#1e293b',
+        'border-light': '#e2e8f0',
+        'border-dark': '#334155',
+      },
+      fontFamily: {
+        'display': ['Inter', 'sans-serif']
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
+}
 ```
 
-## Running end-to-end tests
+### 3. Styles globaux (src/styles.scss)
 
-For end-to-end (e2e) testing, run:
+```scss
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-```bash
-ng e2e
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### 4. Index.html - Ajouter Google Fonts et Material Icons
 
-## Additional Resources
+```html
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+  
+  Medical Frontend

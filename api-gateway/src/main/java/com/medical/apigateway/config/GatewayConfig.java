@@ -33,7 +33,7 @@ public class GatewayConfig  {
 
         return builder.routes()
 
-                // ===== MS PATIENTS =====
+
                 .route("ms-patients", r -> r
                         .path("/api/patients/**", "/api/dossiers/**", "/api/health")
                         .filters(f -> f
@@ -44,7 +44,7 @@ public class GatewayConfig  {
                         .uri("lb://ms-patients")
                 )
 
-                // ===== APPOINTMENTS SERVICE =====
+
                 .route("appointments-service", r -> r
                         .path("/api/appointments/**", "/api/doctors/**")
                         .filters(f -> f
@@ -55,7 +55,7 @@ public class GatewayConfig  {
                         .uri("lb://appointments-service")
                 )
 
-                // ===== GATEWAY HEALTH =====
+                
                 .route("gateway-health", r -> r
                         .path("/gateway/health")
                         .filters(f -> f.setStatus(HttpStatus.OK))

@@ -163,3 +163,7 @@ export class PatientFormComponent implements OnInit {
   get codePostal() { return this.patientForm.get('codePostal'); }
   get email() { return this.patientForm.get('email'); }
 }
+
+
+
+
