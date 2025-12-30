@@ -1,0 +1,342 @@
+<div class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center">
+  <!-- Main Container -->
+  <div class="w-full max-w-[1200px] h-full flex-1 flex flex-col p-6 md:p-8 lg:p-10">
+    
+    <!-- Header Section -->
+    <header class="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-text-main dark:text-white text-3xl font-bold tracking-tight">New Appointment</h1>
+        <p class="text-slate-500 dark:text-slate-400 text-sm font-normal">Fill in the details to schedule a new consultation.</p>
+      </div>
+      <button 
+        (click)="cancel()"
+        class="flex items-center justify-center gap-2 px-4 h-10 rounded-lg border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 text-slate-900 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+        <span>Cancel</span>
+      </button>
+    </header>
+
+    <!-- Main Form Grid -->
+    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+      
+      <!-- Left Column: Patient & Doctor Selection -->
+      <div class="lg:col-span-4 flex flex-col gap-6">
+        
+        <!-- Patient Search Card -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-2 mb-4 text-primary dark:text-blue-400">
+            <span class="material-symbols-outlined">person_search</span>
+            <h2 class="text-slate-900 dark:text-white text-lg font-semibold">Patient Details</h2>
+          </div>
+          
+          <label class="flex flex-col gap-2">
+            <span class="text-slate-900 dark:text-slate-200 text-sm font-medium">Find Patient</span>
+            <div class="relative flex items-center w-full">
+              <input 
+                [(ngModel)]="searchPatientTerm"
+                [ngModelOptions]="{standalone: true}"
+                (ngModelChange)="searchPatients()"
+                (focus)="showPatientDropdown = true"
+                class="w-full h-12 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-slate-400"
+                [class.border-red-500]="isFieldInvalid('patientId')"
+                placeholder="Search by name, ID or phone..."/>
+              <div class="absolute right-4 text-slate-400 pointer-events-none flex items-center">
+                <span class="material-symbols-outlined">search</span>
+              </div>
+              
+              <!-- Patient Dropdown -->
+              <div 
+                *ngIf="showPatientDropdown && patients.length > 0"
+                class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg max-h-64 overflow-y-auto z-50">
+                <button 
+                  type="button"
+                  *ngFor="let patient of patients"
+                  (click)="selectPatient(patient)"
+                  class="w-full p-3 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 text-left transition-colors">
+                  <div class="bg-primary/10 h-10 w-10 rounded-full flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                    {{ patient.prenom.charAt(0) }}{{ patient.nom.charAt(0) }}
+                  </div>
+                  <div>
+                    <p class="text-slate-900 dark:text-white text-sm font-semibold">{{ patient.prenom }} {{ patient.nom }}</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs">{{ patient.numeroSecu }}</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <span *ngIf="isFieldInvalid('patientId')" class="text-red-500 text-xs">Patient is required</span>
+          </label>
+
+          <!-- Selected Patient Preview -->
+          <div 
+            *ngIf="selectedPatient"
+            class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800 flex items-start gap-3">
+            <div class="bg-blue-200 dark:bg-blue-800 h-10 w-10 rounded-full flex items-center justify-center text-primary dark:text-blue-200 font-bold text-sm shrink-0">
+              {{ selectedPatient.prenom.charAt(0) }}{{ selectedPatient.nom.charAt(0) }}
+            </div>
+            <div class="flex-1">
+              <p class="text-slate-900 dark:text-white text-sm font-semibold">{{ selectedPatient.prenom }} {{ selectedPatient.nom }}</p>
+              <p class="text-slate-600 dark:text-blue-300 text-xs">ID: #{{ selectedPatient.id }} • {{ selectedPatient.sexe }}</p>
+            </div>
+            <button 
+              type="button"
+              (click)="removePatient()"
+              class="text-slate-500 hover:text-red-500 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Doctor Selection Card -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex-1">
+          <div class="flex items-center gap-2 mb-4 text-primary dark:text-blue-400">
+            <span class="material-symbols-outlined">stethoscope</span>
+            <h2 class="text-slate-900 dark:text-white text-lg font-semibold">Select Specialist</h2>
+          </div>
+
+          <!-- Doctor Selection -->
+          <div class="relative mb-4">
+            <div 
+              *ngIf="selectedDoctor"
+              class="w-full flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
+              <div class="flex items-center gap-3">
+                <div 
+                  class="h-10 w-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-600"
+                  [style.background-image]="selectedDoctor.photo ? 'url(' + selectedDoctor.photo + ')' : 'none'"
+                  [class.bg-slate-200]="!selectedDoctor.photo">
+                  <span *ngIf="!selectedDoctor.photo" class="flex items-center justify-center h-full text-slate-500 font-bold">
+                    {{ selectedDoctor.firstName.charAt(0) }}{{ selectedDoctor.lastName.charAt(0) }}
+                  </span>
+                </div>
+                <div>
+                  <p class="text-slate-900 dark:text-white text-sm font-semibold">
+                    Dr. {{ selectedDoctor.firstName }} {{ selectedDoctor.lastName }}
+                  </p>
+                  <p class="text-slate-500 dark:text-slate-400 text-xs">{{ selectedDoctor.specialty }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <label class="flex flex-col gap-2">
+              <span class="text-slate-900 dark:text-slate-200 text-sm font-medium">Appointment Type</span>
+              <select 
+                formControlName="type"
+                class="w-full h-12 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                [class.border-red-500]="isFieldInvalid('type')">
+                <option [value]="AppointmentType.CONSULTATION">Consultation</option>
+                <option [value]="AppointmentType.FOLLOW_UP">Follow-up</option>
+                <option [value]="AppointmentType.CHECKUP">Check-up</option>
+                <option [value]="AppointmentType.EMERGENCY">Emergency</option>
+              </select>
+            </label>
+
+            <label class="flex flex-col gap-2">
+              <span class="text-slate-900 dark:text-slate-200 text-sm font-medium">Reason for Consultation</span>
+              <textarea 
+                formControlName="reason"
+                class="w-full min-h-[100px] rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                [class.border-red-500]="isFieldInvalid('reason')"
+                placeholder="Briefly describe the symptoms or reason for visit..."></textarea>
+              <span *ngIf="isFieldInvalid('reason')" class="text-red-500 text-xs">Reason is required</span>
+            </label>
+
+            <label class="flex flex-col gap-2">
+              <span class="text-slate-900 dark:text-slate-200 text-sm font-medium">
+                Additional Notes <span class="text-slate-500 font-normal">(Optional)</span>
+              </span>
+              <textarea 
+                formControlName="notes"
+                class="w-full min-h-[80px] rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                placeholder="Any previous conditions, allergies, etc."></textarea>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Date & Time Selection -->
+      <div class="lg:col-span-8 flex flex-col h-full">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full flex flex-col">
+          
+          <!-- Card Header -->
+          <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-primary dark:text-blue-400">
+              <span class="material-symbols-outlined">calendar_month</span>
+              <h2 class="text-slate-900 dark:text-white text-lg font-semibold">Date & Time Selection</h2>
+            </div>
+            <div 
+              *ngIf="selectedDoctor && availableSlots.length > 0"
+              class="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full">
+              <span class="material-symbols-outlined text-primary text-[18px]">info</span>
+              <span class="text-primary text-xs font-medium">{{ getSlotsAvailableCount() }} slots available</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col lg:flex-row flex-1 overflow-hidden">
+            
+            <!-- Calendar Component -->
+            <div class="p-6 lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-700">
+              <div class="flex items-center justify-between mb-6">
+                <button 
+                  type="button"
+                  (click)="previousMonth()"
+                  class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-900 dark:text-white transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                </button>
+                <span class="text-slate-900 dark:text-white text-base font-bold">{{ formatMonthYear() }}</span>
+                <button 
+                  type="button"
+                  (click)="nextMonth()"
+                  class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-900 dark:text-white transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                </button>
+              </div>
+
+              <!-- Calendar Grid -->
+              <div class="grid grid-cols-7 gap-y-4 gap-x-1">
+                <!-- Weekday Headers -->
+                <div class="text-center text-xs font-bold text-slate-500 uppercase tracking-wider">S</div>
+                <div class="text-center text-xs font-bold text-slate-500 uppercase tracking-wider">M</div>
+                <div class="text-center text-xs font-bold text-slate-500 uppercase tracking-wider">T</div>
+                <div class="text-center text-xs font-bold text-slate-500 uppercase tracking-wider">W</div>
+                <div class="text-center text-xs font-bold text-slate-500 uppercase tracking-wider">T</div>
+                <div class="text-center text-xs font-bold text-slate-500 uppercase tracking-wider">F</div>
+                <div class="text-center text-xs font-bold text-slate-500 uppercase tracking-wider">S</div>
+
+                <!-- Calendar Days -->
+                <button 
+                  type="button"
+                  *ngFor="let day of calendarDays"
+                  (click)="day && !isPastDate(day) ? selectDate(day) : null"
+                  [disabled]="!day || isPastDate(day)"
+                  class="h-9 w-9 mx-auto flex items-center justify-center rounded-full text-sm transition-colors"
+                  [class.text-slate-300]="!day"
+                  [class.text-slate-400]="day && isPastDate(day)"
+                  [class.cursor-not-allowed]="!day || isPastDate(day)"
+                  [class.bg-primary]="day && isDateSelected(day)"
+                  [class.text-white]="day && isDateSelected(day)"
+                  [class.font-semibold]="day && isDateSelected(day)"
+                  [class.shadow-md]="day && isDateSelected(day)"
+                  [class.text-slate-900]="day && !isDateSelected(day) && !isPastDate(day)"
+                  [class.dark:text-white]="day && !isDateSelected(day) && !isPastDate(day)"
+                  [class.hover:bg-slate-100]="day && !isDateSelected(day) && !isPastDate(day)"
+                  [class.dark:hover:bg-slate-700]="day && !isDateSelected(day) && !isPastDate(day)">
+                  {{ day ? day.getDate() : '' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="p-6 lg:w-1/2 flex flex-col">
+              <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-4">
+                Available Slots <span class="text-slate-500 font-normal ml-1">- 30 min</span>
+              </h3>
+
+              <div *ngIf="loading" class="flex-1 flex items-center justify-center">
+                <app-loading></app-loading>
+              </div>
+
+              <div *ngIf="!loading && availableSlots.length === 0" class="flex-1 flex items-center justify-center">
+                <div class="text-center">
+                  <span class="material-symbols-outlined text-slate-300 text-6xl mb-2">event_busy</span>
+                  <p class="text-slate-500 text-sm">No slots available for this date</p>
+                </div>
+              </div>
+
+              <div *ngIf="!loading && availableSlots.length > 0" class="flex-1 overflow-y-auto pr-2">
+                <div class="grid grid-cols-2 gap-3">
+                  <button 
+                    type="button"
+                    *ngFor="let slot of availableSlots"
+                    (click)="selectSlot(slot)"
+                    [disabled]="!slot.available"
+                    class="flex items-center justify-center py-2 px-3 rounded-lg text-sm font-medium transition-all"
+                    [class.border]="!isSlotSelected(slot)"
+                    [class.border-slate-200]="slot.available && !isSlotSelected(slot)"
+                    [class.dark:border-slate-600]="slot.available && !isSlotSelected(slot)"
+                    [class.bg-white]="slot.available && !isSlotSelected(slot)"
+                    [class.dark:bg-slate-900]="slot.available && !isSlotSelected(slot)"
+                    [class.text-slate-900]="slot.available && !isSlotSelected(slot)"
+                    [class.dark:text-white]="slot.available && !isSlotSelected(slot)"
+                    [class.hover:border-primary]="slot.available && !isSlotSelected(slot)"
+                    [class.hover:text-primary]="slot.available && !isSlotSelected(slot)"
+                    [class.bg-primary]="isSlotSelected(slot)"
+                    [class.text-white]="isSlotSelected(slot)"
+                    [class.shadow-md]="isSlotSelected(slot)"
+                    [class.ring-2]="isSlotSelected(slot)"
+                    [class.ring-primary]="isSlotSelected(slot)"
+                    [class.ring-offset-2]="isSlotSelected(slot)"
+                    [class.dark:ring-offset-slate-800]="isSlotSelected(slot)"
+                    [class.bg-slate-100]="!slot.available"
+                    [class.dark:bg-slate-900]="!slot.available"
+                    [class.text-slate-400]="!slot.available"
+                    [class.dark:text-slate-600]="!slot.available"
+                    [class.cursor-not-allowed]="!slot.available">
+                    {{ slot.start }}
+                    <span *ngIf="isSlotSelected(slot)" class="material-symbols-outlined text-[16px] ml-1">check_circle</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Footer -->
+          <div class="p-6 bg-slate-50 dark:bg-slate-800/50 mt-auto border-t border-slate-200 dark:border-slate-700">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div *ngIf="selectedSlot" class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-green-600 dark:text-green-400 mt-1">verified_user</span>
+                <div>
+                  <p class="text-sm font-semibold text-slate-900 dark:text-white">Slot Available</p>
+                  <p class="text-xs text-slate-600 dark:text-slate-400">
+                    {{ selectedDate | date:'MMM d, yyyy' }} at {{ selectedSlot.start }} is open.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 w-full sm:w-auto">
+                <button 
+                  type="submit"
+                  [disabled]="appointmentForm.invalid || submitting"
+                  class="flex-1 sm:flex-none px-6 py-3 rounded-lg bg-primary hover:bg-blue-700 text-white text-sm font-semibold shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <span *ngIf="!submitting" class="material-symbols-outlined text-[20px]">event_available</span>
+                  <span *ngIf="submitting" class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+                  {{ submitting ? 'Scheduling...' : 'Schedule Appointment' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Success Message -->
+    <div 
+      *ngIf="successMessage"
+      class="fixed top-20 right-6 z-50 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 shadow-lg animate-fade-in">
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
+        <div>
+          <p class="text-sm font-semibold text-green-900 dark:text-green-100">Success!</p>
+          <p class="text-sm text-green-700 dark:text-green-300">{{ successMessage }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div 
+      *ngIf="error"
+      class="fixed top-20 right-6 z-50 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 shadow-lg">
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
+        <div class="flex-1">
+          <p class="text-sm font-semibold text-red-900 dark:text-red-100">Error</p>
+          <p class="text-sm text-red-700 dark:text-red-300">{{ error }}</p>
+        </div>
+        <button (click)="error = null" class="text-red-600 hover:text-red-800">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
