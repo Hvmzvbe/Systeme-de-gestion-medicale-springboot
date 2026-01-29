@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="service-register" />
         <module name="api-gateway" />
+        <module name="auth-service" />
         <module name="ms-patients" />
         <module name="service-config" />
       </profile>
@@ -26,6 +27,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="appointments-service" options="-parameters" />
+      <module name="auth-service" options="-parameters" />
       <module name="ms-patients" options="-parameters" />
       <module name="service-config" options="-parameters" />
       <module name="service-register" options="-parameters" />

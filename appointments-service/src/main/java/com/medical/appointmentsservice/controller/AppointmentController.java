@@ -17,7 +17,7 @@ import java.util.List;
 public class AppointmentController {
 
     @Autowired
-    private AppointmentService appointmentService;
+    private AppointmentService appointmentService ; 
 
     @PostMapping
     public ResponseEntity<AppointmentDTO> createAppointment(
